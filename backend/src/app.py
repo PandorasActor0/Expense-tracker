@@ -12,6 +12,11 @@ def index():
 
 @app.route('/expenses', methods=['GET'])
 def listar_expenses():
+    """This function brings all the data of the expenses made by all the users
+
+    Returns:
+        JSON : All expenses
+    """
     try:
         cursor= conexion.connection.cursor()
         sql="SELECT * FROM expenses"
@@ -27,6 +32,11 @@ def listar_expenses():
 
 @app.route('/expensesUser', methods=['GET'])
 def leer_expenses():
+    """This function brings all the data of the expenses made by the user who requests it
+
+    Returns:
+        JSON : Expenses per user
+    """
     try:
         args = request.args
         user = args.get("user")
@@ -45,6 +55,11 @@ def leer_expenses():
     
 @app.route("/adduser", methods=['POST'])
 def agregaruser():
+    """This function allows you to create a user
+    
+    Returns:
+        JSON : messaje
+    """
     try:
         cursor= conexion.connection.cursor()
         sql="SELECT * FROM users WHERE user = '{0}'".format(request.json['user'])
@@ -63,6 +78,11 @@ def agregaruser():
     
 @app.route("/addcat", methods=['POST'])
 def agregarcat():
+    """This function allows you to create a new category
+
+    Returns:
+        JSON : Messaje
+    """
     try:
         cursor = conexion.connection.cursor()
         sql = "SELECT * FROM categories WHERE name = '{0}'".format(request.json['name'])
@@ -78,7 +98,34 @@ def agregarcat():
     except Exception as ex:
         return jsonify({'mensaje': "Error"})
 
+@app.route("/cat", methods=['GET'])
+def listarCategorias():
+    """This function returns all categories
+
+    Returns:
+        JSON : List all categories
+    """
+    try:
+        cursor = conexion.connection.cursor()
+        sql = "SELECT * FROM categories"
+        cursor.execute(sql)
+        datos = cursor
+        categories=[]
+        for fila in datos:
+            categorie={'category_id':fila[0],'name':fila[1]}
+            categories.append(categorie)
+        return jsonify({'expenses':categories,'mensaje':"list of expenses"})
+    except Exception as ex:
+        return jsonify({'mensaje':"Error"})
+    
 def pagina_no_encontrada(error):
+    """This function sends a message if the page is not found
+    Args:
+        error (404): no found
+
+    Returns:
+        string: messaje no found formtat html
+    """
     return "<h1> La pagina que intentas buscar no existe </h1>",404
 
 if __name__=='__main__':
