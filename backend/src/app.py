@@ -60,6 +60,23 @@ def agregaruser():
             return jsonify({'mensaje':'El usuario no esta disponible'})
     except Exception as ex:
         return jsonify({'mensaje':"Error"})
+    
+@app.route("/addcat", methods=['POST'])
+def agregarcat():
+    try:
+        cursor = conexion.connection.cursor()
+        sql = "SELECT * FROM categories WHERE name = '{0}'".format(request.json['name'])
+        cursor.execute(sql)
+        datos = cursor.fetchone()
+        if datos == None:
+            sql="INSERT INTO categories (name) VALUES('{0}')".format(request.json['name'])
+            cursor.execute(sql)
+            conexion.connection.commit() #confirma la accion de insert
+            return jsonify({'mensaje': "Categoria almacenada"})
+        else:
+            return jsonify({'mensjae': "La categoria ya se encuentra registrada"})
+    except Exception as ex:
+        return jsonify({'mensaje': "Error"})
 
 def pagina_no_encontrada(error):
     return "<h1> La pagina que intentas buscar no existe </h1>",404
