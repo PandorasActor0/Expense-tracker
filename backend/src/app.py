@@ -47,11 +47,17 @@ def leer_expenses():
 def agregaruser():
     try:
         cursor= conexion.connection.cursor()
-        sql="""INSERT INTO users (user, name, password)
-        VALUES ('{0}','{1}',{2})""".format(request.json['user'],request.json['name'],request.json['password'])
+        sql="SELECT * FROM users WHERE user = '{0}'".format(request.json['user'])
         cursor.execute(sql)
-        conexion.connection.commit() #confirma la accion de insert
-        return jsonify({'mensaje':"Usuario registrado"})
+        datos = cursor.fetchone()
+        if datos == None:
+            sql="""INSERT INTO users (user, name, password)
+            VALUES ('{0}','{1}',{2})""".format(request.json['user'],request.json['name'],request.json['password'])
+            cursor.execute(sql)
+            conexion.connection.commit() #confirma la accion de insert
+            return jsonify({'mensaje':"Usuario registrado"})
+        else:
+            return jsonify({'mensaje':'El usuario no esta disponible'})
     except Exception as ex:
         return jsonify({'mensaje':"Error"})
 
