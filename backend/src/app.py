@@ -43,10 +43,20 @@ def leer_expenses():
     except Exception as ex:
         return jsonify({'mensaje':"Error"})
     
-
+@app.route("/adduser", methods=['POST'])
+def agregaruser():
+    try:
+        cursor= conexion.connection.cursor()
+        sql="""INSERT INTO users (user, name, password)
+        VALUES ('{0}','{1}',{2})""".format(request.json['user'],request.json['name'],request.json['password'])
+        cursor.execute(sql)
+        conexion.connection.commit() #confirma la accion de insert
+        return jsonify({'mensaje':"Usuario registrado"})
+    except Exception as ex:
+        return jsonify({'mensaje':"Error"})
 
 def pagina_no_encontrada(error):
-    return "<h1> La pagina que intentas buscar no existe </h1>"
+    return "<h1> La pagina que intentas buscar no existe </h1>",404
 
 if __name__=='__main__':
     app.config.from_object(config['development'])
