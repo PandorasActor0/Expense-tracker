@@ -94,7 +94,7 @@ def agregarcat():
             conexion.connection.commit() #confirma la accion de insert
             return jsonify({'mensaje': "Categoria almacenada"})
         else:
-            return jsonify({'mensjae': "La categoria ya se encuentra registrada"})
+            return jsonify({'mensaje': "La categoria ya se encuentra registrada"})
     except Exception as ex:
         return jsonify({'mensaje': "Error"})
 
@@ -117,6 +117,25 @@ def listarCategorias():
         return jsonify({'expenses':categories,'mensaje':"list of expenses"})
     except Exception as ex:
         return jsonify({'mensaje':"Error"})
+    
+@app.route("/addexpenses", methods=['POST'])
+def addExpenses():
+    try:
+        cursor = conexion.connection.cursor()
+        sql = f"SELECT * FROM users WHERE user = '{request.json['user']}'"
+        cursor.execute(sql)
+        datos = cursor.fetchone()
+        if datos != None:
+            sql = f"""INSERT INTO expenses (expense_id, user, amount, description, category_id, date)
+            VALUES (NULL, '{request.json['user']}', {request.json['amount']}, '{request.json['description']}', {request.json['category_id']}, NOW())
+            """
+            cursor.execute(sql)
+            conexion.connection.commit()
+            return jsonify({'mensaje': "Gasto almacenado"})
+        else:
+            return jsonify({'mensaje': "No se encontro el usuario"})
+    except Exception as ex:
+        return jsonify({'mensaje': f"Error {str(ex)}"})
     
 def pagina_no_encontrada(error):
     """This function sends a message if the page is not found
